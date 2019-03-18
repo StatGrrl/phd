@@ -9,10 +9,10 @@ from functions import *
 
 # declare constants
 grid_size = 10
-rhino_start = None
-rhino2_start = None
-ranger_start = None
-poacher_start = None
+rhino_start = [3,3]
+rhino2_start = [7,7]
+ranger_start = [0,1]
+poacher_start = [8,9]
 prev_moves = 20
 seed = 2562547
 
@@ -72,7 +72,7 @@ spne_max_same_sim = sim(game_type='SPNE', method='max', start_end='same',
                     rhino2_start=rhino2_start, ranger_start=ranger_start, 
                     poacher_start=poacher_start, seed=seed)
 
-spne_max_diff_sim = sim(game_type='SPNE', method='max', start_end='same', 
+spne_max_diff_sim = sim(game_type='SPNE', method='max', start_end='diff', 
                     grid_size=grid_size, rhino_start=rhino_start, 
                     rhino2_start=rhino2_start, ranger_start=ranger_start, 
                     poacher_start=poacher_start, seed=seed)
@@ -82,7 +82,7 @@ spne_rand_same_sim = sim(game_type='SPNE', method='rand', start_end='same',
                     rhino2_start=rhino2_start, ranger_start=ranger_start, 
                     poacher_start=poacher_start, seed=seed)
 
-spne_rand_diff_sim = sim(game_type='SPNE', method='rand', start_end='same', 
+spne_rand_diff_sim = sim(game_type='SPNE', method='rand', start_end='diff', 
                     grid_size=grid_size, rhino_start=rhino_start, 
                     rhino2_start=rhino2_start, ranger_start=ranger_start, 
                     poacher_start=poacher_start, seed=seed)
@@ -92,7 +92,7 @@ spne_norm_same_sim = sim(game_type='SPNE', method='norm', start_end='same',
                     rhino2_start=rhino2_start, ranger_start=ranger_start, 
                     poacher_start=poacher_start, seed=seed)
 
-spne_norm_diff_sim = sim(game_type='SPNE', method='norm', start_end='same', 
+spne_norm_diff_sim = sim(game_type='SPNE', method='norm', start_end='diff', 
                     grid_size=grid_size, rhino_start=rhino_start, 
                     rhino2_start=rhino2_start, ranger_start=ranger_start, 
                     poacher_start=poacher_start, seed=seed)
