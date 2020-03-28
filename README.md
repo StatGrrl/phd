@@ -12,5 +12,6 @@ Code still under develeopment and still to be documented...
 - Spatial effects and structured movement introduced
 - Park class with method to create grid for park or subarea
 - Player class with subclasses for Wildlife, Ranger and Poacher
-- Methods and functions necessary for running simulations
+- Game class with methods to get strategies, payoffs and game solution
 - Simple pure strategy Stackelberg algorithm
+- Functions necessary for running simulations
