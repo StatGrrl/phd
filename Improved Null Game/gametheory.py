@@ -32,10 +32,10 @@ def spne(c1, c2, u1, u2, leader):
     --------
 
     >>> spne(['a', 'b', 'c'], ['d', 'e'], [[1, 0], [3, 5], [4, 2]], [[0, 2], [5, 1], [3, 4]], 'p1')
-    (['b', 'd'], [3, 5])
+    {'p1_optimal': 'b', 'p2_optimal': 'd', 'p1_utility': 3, 'p2_utility': 5}
 
     >>> spne(['a', 'b', 'c'], ['d', 'e'], [[1, 0], [3, 5], [4, 2]], [[0, 2], [5, 1], [3, 4]], 'p2')
-    (['c', 'd'], [4, 3])
+    {'p1_optimal': 'c', 'p2_optimal': 'd', 'p1_utility': 4, 'p2_utility': 3}
 
     """
 
@@ -69,7 +69,6 @@ def spne(c1, c2, u1, u2, leader):
             p2_best_resp.append(u2temp[i][p1_best_resp[i]])
         p2_best_resp = int(np.argmax(p2_best_resp))
         p1_best_resp = p1_best_resp[p2_best_resp]
-        strategies = [c1[p1_best_resp], c2[p2_best_resp]]
-        payoff = [u1[p1_best_resp][p2_best_resp], u2[p1_best_resp][p2_best_resp]]
 
-    return strategies, payoff
+    return {'p1_optimal': c1[p1_best_resp], 'p2_optimal': c2[p2_best_resp],
+            'p1_utility': u1[p1_best_resp][p2_best_resp], 'p2_utility': u2[p1_best_resp][p2_best_resp]}
