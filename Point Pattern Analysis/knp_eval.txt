@@ -1,0 +1,142 @@
+> model_cov
+[[1]]
+[1] "roads"  "camps"  "picnic" "gates"  "border"
+
+[[2]]
+[1] "camps"  "border" "water"
+
+[[3]]
+[1] "roads" "gates" "water"
+
+[[4]]
+[1] "camps"  "border" "water"
+
+[[5]]
+[1] "roads"  "camps"  "picnic" "gates"  "border" "dams"   "water"
+
+
+
+
+> models   
+[[1]]
+Nonstationary Poisson process
+Fitted to point pattern dataset 'sample'
+
+Log intensity:  ~roads + I(roads^2) + I(roads^3) + camps + I(camps^2) + picnic
++ I(gates^2) + dams + water
+
+Fitted trend coefficients:
+  (Intercept)         roads    I(roads^2)    I(roads^3)         camps 
+-4.2422036310  0.5217214976 -0.0397645320  0.0008974918  0.1328839385
+   I(camps^2)        picnic    I(gates^2)          dams         water
+-0.0032310103  0.0422932967 -0.0003926468 -0.0491538885 -0.0703559672
+
+                 Estimate         S.E.       CI95.lo       CI95.hi Ztest
+(Intercept) -4.2422036310 0.5940147768 -5.4064511997 -3.0779560622   ***
+roads        0.5217214976 0.0995797484  0.3265487771  0.7168942181   ***
+I(roads^2)  -0.0397645320 0.0079758626 -0.0553969354 -0.0241321286   ***
+I(roads^3)   0.0008974918 0.0001858526  0.0005332273  0.0012617562   ***
+camps        0.1328839385 0.0509267709  0.0330693018  0.2326985753    **
+I(camps^2)  -0.0032310103 0.0011959657 -0.0055750601 -0.0008869605    **
+picnic       0.0422932967 0.0187058349  0.0056305339  0.0789560595     *
+I(gates^2)  -0.0003926468 0.0001432800 -0.0006734705 -0.0001118232    **
+dams        -0.0491538885 0.0260361225 -0.1001837509  0.0018759739
+water       -0.0703559672 0.0206137081 -0.1107580926 -0.0299538419   ***
+                 Zval
+(Intercept) -7.141579
+roads        5.239233
+I(roads^2)  -4.985609
+I(roads^3)   4.829051
+camps        2.609314
+I(camps^2)  -2.701591
+picnic       2.260968
+I(gates^2)  -2.740416
+dams        -1.887911
+water       -3.413067
+
+[[2]]
+Nonstationary Poisson process
+Fitted to point pattern dataset 'sample'
+
+Log intensity:  ~camps + I(border^2) + I(water^2) + I(camps^2)
+
+Fitted trend coefficients:
+ (Intercept)        camps  I(border^2)   I(water^2)   I(camps^2)
+-2.940008887  0.117710341 -0.002028738 -0.001013892 -0.002640837
+
+                Estimate         S.E.      CI95.lo       CI95.hi Ztest
+(Intercept) -2.940008887 0.4408319969 -3.804023724 -2.0759940497   ***
+camps        0.117710341 0.0428363257  0.033752685  0.2016679966    **
+I(border^2) -0.002028738 0.0005721523 -0.003150136 -0.0009073398   ***
+I(water^2)  -0.001013892 0.0003014973 -0.001604816 -0.0004229686   ***
+I(camps^2)  -0.002640837 0.0010514382 -0.004701618 -0.0005800564     *
+                 Zval
+(Intercept) -6.669228
+camps        2.747909
+I(border^2) -3.545800
+I(water^2)  -3.362857
+I(camps^2)  -2.511643
+
+[[3]]
+Nonstationary Poisson process
+Fitted to point pattern dataset 'sample'
+
+Log intensity:  ~roads + gates + water
+
+Fitted trend coefficients:
+(Intercept)       roads       gates       water
+-1.57861057  0.03720760 -0.01865596 -0.05184583
+
+               Estimate        S.E.     CI95.lo      CI95.hi Ztest      Zval
+(Intercept) -1.57861057 0.361294609 -2.28673499 -0.870486148   *** -4.369317
+roads        0.03720760 0.008921425  0.01972193  0.054693277   ***  4.170590
+gates       -0.01865596 0.008404007 -0.03512752 -0.002184414     * -2.219889
+water       -0.05184583 0.011783939 -0.07494192 -0.028749731   *** -4.399703
+
+[[4]]
+Nonstationary Poisson process
+Fitted to point pattern dataset 'sample'
+
+Log intensity:  ~camps + border + water + camps:water
+
+Fitted trend coefficients:
+ (Intercept)        camps       border        water  camps:water
+-1.316024313 -0.008275214 -0.048614481 -0.067626931  0.002091256
+
+                Estimate        S.E.      CI95.lo      CI95.hi Ztest      Zval
+(Intercept) -1.316024313 0.495314567 -2.286823025 -0.345225601    ** -2.656947
+camps       -0.008275214 0.017219295 -0.042024412  0.025473983       -0.480578
+border      -0.048614481 0.013405173 -0.074888137 -0.022340825   *** -3.626546
+water       -0.067626931 0.024575689 -0.115794396 -0.019459466    ** -2.751782
+camps:water  0.002091256 0.001190992 -0.000243046  0.004425558        1.755894
+
+[[5]]
+Nonstationary Poisson process
+Fitted to point pattern dataset 'sample'
+
+Log intensity:  ~roads + camps + picnic + gates + border + dams + water
+
+Fitted trend coefficients:
+ (Intercept)        roads        camps       picnic        gates       border
+-1.797344287  0.032010841  0.009621007  0.010011243 -0.015361773 -0.008519108
+        dams        water
+-0.028977953 -0.039421031
+
+                Estimate       S.E.       CI95.lo      CI95.hi Ztest       Zval
+(Intercept) -1.797344287 0.41712447 -2.6148932289 -0.979795346   *** -4.3088920
+roads        0.032010841 0.01624424  0.0001727244  0.063848957     *  1.9705970
+camps        0.009621007 0.01442303 -0.0186476188  0.037889632        0.6670585
+picnic       0.010011243 0.02043703 -0.0300445918  0.050067077        0.4898581
+gates       -0.015361773 0.01159362 -0.0380848521  0.007361306       -1.3250195
+border      -0.008519108 0.01748596 -0.0427909649  0.025752748       -0.4871970
+dams        -0.028977953 0.02756564 -0.0830056112  0.025049706       -1.0512346
+water       -0.039421031 0.02183118 -0.0822093601  0.003367298       -1.8057214
+
+[[6]]
+Stationary Poisson process
+Fitted to point pattern dataset 'sample'
+Intensity: 0.0908686
+             Estimate     S.E.   CI95.lo   CI95.hi Ztest      Zval
+log(lambda) -2.398341 0.070014 -2.535566 -2.261116   *** -34.25516
+
+> 

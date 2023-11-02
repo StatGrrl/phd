@@ -1,0 +1,70 @@
+> summary(lambda)
+real-valued pixel image
+44 x 62 pixel array (ny, nx)
+enclosing rectangle: [-91.55239, -29.55239] x [2694.458, 2738.458] km
+dimensions of each pixel: 1 x 1 km
+Image is defined on a subset of the rectangular grid
+Subset area = 2245 square km
+Subset area fraction = 0.823
+Pixel values (inside window):
+        range = [4.201737e-05, 0.2795719]
+        integral = 250
+        mean = 0.1113586
+
+--------------------------------------------------------------------------------- 
+
+> summary(pp)    
+Planar point pattern:  250 points
+Average intensity 0.1113586 points per square km
+
+Coordinates are given to 5 decimal places
+
+binary image mask
+44 x 62 pixel array (ny, nx)
+pixel size: 1 by 1 km
+enclosing rectangle: [-91.55239, -29.55239] x [2694.4575, 2738.4575] km
+                     (62 x 44 km)
+Window area = 2245 square km
+Unit of length: 1 km
+Fraction of frame area: 0.823
+
+--------------------------------------------------------------------------------- 
+
+> summary(sample)
+Planar point pattern:  204 points
+Average intensity 0.0908686 points per square km
+
+Coordinates are given to 5 decimal places
+
+binary image mask
+44 x 62 pixel array (ny, nx)
+pixel size: 1 by 1 km
+enclosing rectangle: [-91.55239, -29.55239] x [2694.4575, 2738.4575] km
+                     (62 x 44 km)
+Window area = 2245 square km
+Unit of length: 1 km
+Fraction of frame area: 0.823
+
+--------------------------------------------------------------------------------- 
+
+> qt
+
+        Chi-squared test of CSR using quadrat counts
+
+data:
+X2 = 38.394, df = 11, p-value = 0.0001342
+alternative hypothesis: two.sided
+
+Quadrats: 12 tiles (levels of a pixel image)
+> 
+> round(cov_quad, 3)
+       Q1 Q2 Q3 Q4  Chi2 Berman_Z1 Berman_Z2    KS   LRT   AUC
+roads  20 63 63 58 0.000     0.025     0.000 0.000 0.001 0.583
+camps  24 56 53 71 0.000     0.034     0.000 0.001 0.000 0.585
+picnic 72 56 44 32 0.001     0.074     0.000 0.000 0.000 0.423
+gates  42 47 78 37 0.000     0.610     0.199 0.046 0.502 0.517
+border 47 76 48 33 0.001     0.154     0.014 0.003 0.014 0.546
+dams   65 56 38 45 0.080     0.141     0.008 0.033 0.009 0.546
+water  58 58 58 30 0.019     0.063     0.001 0.005 0.001 0.556
+>
+ 
