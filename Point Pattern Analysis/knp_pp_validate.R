@@ -39,7 +39,7 @@ par(mfrow = c(3, 2), mar = c(1, 0, 1, 1), cex.main = 0.8)
 for (i in seq_along(models)) {
     diagnose.ppm(models[[i]], which = "smooth", type = "raw",
         main = "")
-    mtext(panel[i], side = 3, line = 0, cex = 0.8)
+    #mtext(panel[i], side = 3, line = 0, cex = 0.8)
 }
 dev.off()
 
@@ -101,7 +101,7 @@ pdf(paste(path, "eval_res_lurking_e.pdf", sep = ""), height = 9, width = 7)
 par(mfrow = c(4, 2), mar = c(2, 2, 2, 1), oma = c(2, 2, 0, 0), cex.main = 0.9)
 for (i in seq_along(model_cov[[j]])) {
     z <- covariates[[model_cov[[j]][i]]]
-    lurking(models[[j]], z, type = "raw", main = panel[i], xlab = "", ylab = "",
+    lurking(models[[j]], z, type = "raw", main = "", xlab = "", ylab = "",
         cex.axis = 0.8)
 }
 mtext(xlab, side = 1, line = 0, outer = TRUE, cex = 0.8)
@@ -117,7 +117,7 @@ pdf(paste(path, "eval_res_partial_a.pdf", sep = ""), height = 4, width = 7)
 par(mfrow = c(2, 3), mar = c(2, 2, 1, 1), oma = c(2, 2, 0, 0))
 for (i in seq_along(model_cov[[j]])) {
     plot(parres(models[[j]], model_cov[[j]][i]), main = "",
-        xlab = "", ylab = "", cex.axis = 0.8)
+        xlab = "", ylab = "", cex.axis = 0.8, legend=FALSE)
 }
 mtext(xlab, side = 1, line = 0, outer = TRUE, cex = 0.8)
 mtext(ylab, side = 2.5, line = 0, outer = TRUE, cex = 0.8)
@@ -127,7 +127,7 @@ pdf(paste(path, "eval_res_partial_b.pdf", sep = ""), height = 2, width = 7)
 par(mfrow = c(1, 3), mar = c(2, 2, 1, 1), oma = c(2, 2, 0, 0))
 for (i in seq_along(model_cov[[j]])) {
     plot(parres(models[[j]], model_cov[[j]][i]), main = "",
-        xlab = "", ylab = "", cex.axis = 0.8)
+        xlab = "", ylab = "", cex.axis = 0.8, legend=FALSE)
 }
 mtext(xlab, side = 1, line = 0, outer = TRUE, cex = 0.8)
 mtext(ylab, side = 2.5, line = 0, outer = TRUE, cex = 0.8)
@@ -137,7 +137,7 @@ pdf(paste(path, "eval_res_partial_c.pdf", sep = ""), height = 2, width = 7)
 par(mfrow = c(1, 3), mar = c(2, 2, 1, 1), oma = c(2, 2, 0, 0))
 for (i in seq_along(model_cov[[j]])) {
     plot(parres(models[[j]], model_cov[[j]][i]), main = "",
-        xlab = "", ylab = "", cex.axis = 0.8)
+        xlab = "", ylab = "", cex.axis = 0.8, legend=FALSE)
 }
 mtext(xlab, side = 1, line = 0, outer = TRUE, cex = 0.8)
 mtext(ylab, side = 2.5, line = 0, outer = TRUE, cex = 0.8)
@@ -146,7 +146,7 @@ j <- 4
 pdf(paste(path, "eval_res_partial_d.pdf", sep = ""), height = 4, width = 6)
 par(mfrow = c(1, 1), mar = c(2, 2, 1, 1), oma = c(2, 2, 0, 0))
 plot(parres(models[[j]], "border"), main = "",
-        xlab = "", ylab = "", cex.axis = 0.8)
+        xlab = "", ylab = "", cex.axis = 0.8, legend=FALSE)
 mtext(xlab, side = 1, line = 0, outer = TRUE, cex = 0.8)
 mtext(ylab, side = 2.5, line = 0, outer = TRUE, cex = 0.8)
 dev.off()
@@ -154,8 +154,8 @@ j <- 5
 pdf(paste(path, "eval_res_partial_e.pdf", sep = ""), height = 9, width = 7)
 par(mfrow = c(4, 2), mar = c(2, 2, 2, 1), oma = c(2, 2, 0, 0), cex.main = 0.9)
 for (i in seq_along(model_cov[[j]])) {
-    plot(parres(models[[j]], model_cov[[j]][i]), main = panel[i],
-        xlab = "", ylab = "", cex.axis = 0.8)
+    plot(parres(models[[j]], model_cov[[j]][i]), main = "",
+        xlab = "", ylab = "", cex.axis = 0.8, legend=FALSE)
 }
 mtext(xlab, side = 1, line = 0, outer = TRUE, cex = 0.8)
 mtext(ylab, side = 2.5, line = 0, outer = TRUE, cex = 0.8)
@@ -165,6 +165,7 @@ dev.off()
 best_fit <- models[[1]]
 image_fit <- predict(best_fit, locations = poach_prob,
   covariates = covariates, type = "intensity") # fitted intensity image
+image_adj <- image_fit / p # adjusted intensity for thinning
 prob_fit <- image_fit / npoints(pp) # probability image
 raster_fit <- raster(prob_fit) # probability raster
 crs(raster_fit) <- crs(grid_proj) # set raster crs

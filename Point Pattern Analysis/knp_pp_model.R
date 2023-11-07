@@ -63,10 +63,10 @@ xlab <- "Distance (km)"
 ylab <- "Intensity Estimate"
 panel <- c("(a)", "(b)", "(c)", "(d)", "(e)", "(f)", "(g)")
 pdf(paste0(path, "model_polys_effect.pdf"), width = 7, height = 9)
-par(mfrow = c(4, 2), mar = c(2, 2, 2, 1), cex.main = 1, oma = c(3, 3, 0, 0))
+par(mfrow = c(4, 2), mar = c(2, 2, 1, 1), cex.main = 1, oma = c(3, 3, 0, 0))
 for (i in seq_along(fit_polys)) {
   plot(effectfun(fit_polys[[i]], names(covariates)[i], se.fit = TRUE),
-      main = panel[i])
+      main = "", legend = FALSE)
   abline(h = 0.09, col = "red", lty = 2)
 }
 mtext(xlab, side = 1, line = 0.5, cex = 0.8, outer = TRUE)
@@ -133,28 +133,28 @@ fit_all_df <- rbind(fit_all_df,
 round(fit_all_df[order(fit_all_df$AIC), ], 3)
 
 # plot intensity and pp
-xlab <- "Westing distance (km)"
-ylab <- "Southing distance (km)"
+xlab <- "Easting distance (km)"
+ylab <- "Northing distance (km)"
 pdf(paste0(path, "model_given_intensity.pdf"), width = 5, height = 3)
 par(mfrow = c(1, 1), mar = c(2, 2, 0, 2), oma = c(1, 1, 0, 1))
-plot(lambda, main = "", axes = TRUE, cex.axis = 0.8,
+plot(reflect(lambda), main = "", axes = TRUE, cex.axis = 0.8,
     ribsep = 0.05, ribside = "right")
-plot(sample, add = TRUE, cex = 0.75, pch = 16, cols = rgb(0, 0, 0, 0.6))
-mtext("Given Intensity", side = 4, line = -0.5, outer = TRUE)
+plot(reflect(sample), add = TRUE, cex = 0.75, pch = 16, cols = rgb(0, 0, 0, 0.6))
+mtext("Intensity", side = 4, line = -0.5, outer = TRUE)
 mtext(xlab, side = 1, line = 0, outer = TRUE)
 mtext(ylab, side = 2, line = 0, outer = TRUE)
 dev.off()
 
 # plot fitted models
+fit_adj <- predict(fit_cov, type = "intensity") / p
+fit_se <- predict(fit_cov, type = "intensity", se = TRUE)$se
 pdf(paste0(path, "model_fitted_intensity_cov.pdf"), width = 7, height = 4)
 par(mfrow = c(1, 2), mar = c(2, 2, 2, 0), oma = c(1, 1, 1, 0))
-plot(fit_cov, main = "", axes = TRUE, cex.axis = 0.8,
-    ribsep = 0.05, ribside = "top", cif = FALSE, se = FALSE,
-    superimpose = FALSE)
+plot(reflect(fit_adj), main = "", axes = TRUE, cex.axis = 0.8,
+    ribsep = 0.05, ribside = "top")
 mtext("Fitted Intensity", side = 3, line = 1, cex = 0.8)
-plot(fit_cov, main = "", axes = TRUE, cex.axis = 0.8,
-    ribsep = 0.05, ribside = "top", cif = FALSE, trend = FALSE,
-    superimpose = FALSE)
+plot(reflect(fit_se), main = "", axes = TRUE, cex.axis = 0.8,
+    ribsep = 0.05, ribside = "top")
 mtext("SE of Fitted Intensity", side = 3, line = 1, cex = 0.8)
 mtext(xlab, side = 1, line = -1, outer = TRUE)
 mtext(ylab, side = 2, line = 0, outer = TRUE)
@@ -167,9 +167,8 @@ panel <- c("(a)", "(b)", "(c)", "(d)")
 pdf(paste0(path, "model_fitted_intensity_best.pdf"), width = 7, height = 4.5)
 par(mfrow = c(2, 2), mar = c(2, 2, 1, 3), oma = c(1, 1, 0, 1), cex.main = 0.8)
 for (i in seq_along(best)) {
-  plot(best[[i]], cif = FALSE, se = FALSE, main = panel[i],
-    main = "", axes = TRUE, cex.axis = 0.8,
-    ribsep = 0.05, superimpose = FALSE)
+  fit <- predict(best[[i]], type = "intensity") / p
+  plot(reflect(fit), main = "", axes = TRUE, cex.axis = 0.8, ribsep = 0.05)
     mtext("Fitted Intensity", side = 4, line = 1.5, cex = 0.7)
 }
 mtext(xlab, side = 1, line = 0, outer = TRUE)

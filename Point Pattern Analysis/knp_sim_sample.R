@@ -31,8 +31,8 @@ iter <- 1000
 sim_data <- c("CSR", "Inhomogeneous Poisson", "Sampling Window",
               "p-Thinning", "p(u)-Thinning", "P(u)-Thinning")
 sample_size <- c(50, 100, 200, 300, 400, 500, 1000, 5000)
-results <- hyperframe(iter = 0, sim_data = "CSR", sample_size = 50,
-                        pp = ppp(0, 0)) # dummy record, delete later
+results <- data.frame()
+
 for (i in 1:iter) {
   print(paste("iteration: ", i, sep = ""))
   for (j in seq_along(sim_data)) {
@@ -78,101 +78,121 @@ for (i in 1:iter) {
             pp_large <- rpoispp(lambda, win = w)
             pp <- rthin(pp_large, p_u)
         }
-        hf_iter <- hyperframe(iter = i,
+        fit <- ppm(pp ~ ., covariates = covariates)
+        residual <- residuals(fit)
+        res <- residual$val
+        data_points <- residual$discrete
+        res_data <- res[data_points]
+        res_diffuse <- res[!data_points]
+        df_iter <- data.frame(iter = i,
                                 sim_data = sim_data[j],
                                 sample_size = sample_size[n],
-                                pp = pp)
-        results <- rbind.hyperframe(results, hf_iter)
+                                n = npoints(pp),
+                                intensity = intensity(pp),
+                                p = length(coef(fit)),
+                                res_len = length(res),
+                                res_sum = sum(res),
+                                res_mean = mean(res),
+                                res_var = var(res),
+                                res_abs_sum = sum(abs(res)),
+                                res_sum_sq = sum(res^2),
+                                MAE = sum(abs(res)) / length(res),
+                                MSE = sum(res^2) / length(res),
+                                RMSE = sqrt(sum(res^2) / length(res)),
+                                res_data_len = length(res_data),
+                                res_data_sum = sum(res_data),
+                                res_data_mean = mean(res_data),
+                                res_data_var = var(res_data),
+                                res_data_abs_sum = sum(abs(res_data)),
+                                res_data_sum_sq = sum(res_data^2),
+                                MAE_data = sum(abs(res_data)) / length(res_data),
+                                MSE_data = sum(res_data^2) / length(res_data),
+                                RMSE_data = sqrt(sum(res_data^2) / length(res_data)),
+                                logLik = logLik(fit),
+                                deviance = deviance(fit),
+                                AIC = AIC(fit),
+                                BIC = BIC(fit)
+        )
+        results <- rbind(results, df_iter)
     }
   }
 }
 
 # remove simulation variables
-rm(iter, i, j, n, p, p_u, n_large, lambda, lambda_u, pp, pp_large, hf_iter)
-results <- results[-1, ] # delete dummy record
+rm(iter, i, j, n, p, p_u, n_large, lambda, lambda_u, pp, pp_large, df_iter)
 
 # factor variables
 results$sim_data <- factor(results$sim_data, levels = sim_data)
 results$sample_size <- factor(results$sample_size, levels = sample_size)
 
-# data frame for plotting
-results_df <- as.data.frame(results)
-
-# descriptive statistics
-results_df$npoints <- with(results, npoints(pp))
-results_df$intensity <- with(results, intensity(pp))
-
-# fit models
-results_fit <- results[, 1:3]
-results_fit$fit_csr <- with(results, ppm(pp, ~1))
-results_fit$fit_cov <- with(results, ppm(pp, ~ ., covariates = covariates))
-
-# quadrat gof test
-results_fit$gof_csr <- with(results_fit, quadrat.test(fit_csr, nx = 4, ny = 3))
-results_fit$gof_cov <- with(results_fit, quadrat.test(fit_cov, nx = 4, ny = 3))
-
-# mean absolute error
-results_fit$npoints <- with(results, npoints(pp))
-results_df$mae_csr <- with(results_fit,
-            sum(abs(residuals(fit_csr)$val)) / length(residuals(fit_csr)$val))
-results_df$mae_cov <- with(results_fit,
-            sum(abs(residuals(fit_cov)$val)) / length(residuals(fit_cov)$val))
-
-# goodness of fit
-results_df$gof_csr <- with(results_fit, gof_csr$p.value)
-results_df$gof_cov <- with(results_fit, gof_cov$p.value)
 
 # plots of mean absolute error
-s_mae_box <- ggplot(results_df, aes(y = sample_size, x = mae_cov)) +
-              geom_boxplot() +
-              facet_wrap(~sim_data, ncol = 2) +
-              labs(y = "Sample size") +
-              theme(axis.title.x = element_blank())
-s_mae_dens <- ggplot(results_df, aes(mae_cov, 
-              color = sample_size)) +
-                geom_density(alpha = 0.3) +
+plot_measure <- function(df, measure_col) {
+  measure_name <- names(df)[measure_col]
+  file_name <- paste0("sim_", measure_name, ".pdf")
+  measure <- df[, measure_col]
+  box <- ggplot(df, aes(y = sample_size, x = measure)) +
+                geom_boxplot() +
                 facet_wrap(~sim_data, ncol = 2) +
-                labs(x = "Mean absolute error", y = "Density") +
-                scale_color_discrete(name = "Sample size",
-                  guide = guide_legend(nrow = 2)) +
-                theme(legend.position = c(0.83, 0.9),
-                  legend.title = element_blank(),
-                  legend.text = element_text(size = 10),
-                  legend.key.size = unit(0.2, "cm"),
-                  legend.background = element_blank(),
-                  legend.box.background = element_rect(color = "black"))
-s_mae <- s_mae_box / s_mae_dens
-ggsave(filename = "sim_sample_mae.pdf", plot = s_mae,
-        device = "pdf", path = path, width = 7, height = 9,
-        units = "in", dpi = 500, limitsize = TRUE)
+                labs(y = "Sample size") +
+                theme(axis.title.x = element_blank())
+  density <- ggplot(df, aes(measure, 
+                color = sample_size)) +
+                  geom_density(alpha = 0.3) +
+                  facet_wrap(~sim_data, ncol = 2) +
+                  labs(x = measure_name, y = "Density") +
+                  scale_color_discrete(name = "Sample size",
+                    guide = guide_legend(nrow = 2)) +
+                  theme(legend.position = c(0.83, 0.9),
+                    legend.title = element_blank(),
+                    legend.text = element_text(size = 10),
+                    legend.key.size = unit(0.2, "cm"),
+                    legend.background = element_blank(),
+                    legend.box.background = element_rect(color = "black"))
+  measure_plot <- box / density
+  ggsave(filename = file_name, plot = measure_plot,
+          device = "pdf", path = path, width = 7, height = 9,
+          units = "in", dpi = 500, limitsize = TRUE)
+}
+plot_measure(results, 13)
+plot_measure(results, 14)
+plot_measure(results, 15)
+plot_measure(results, 22)
+plot_measure(results, 23)
+plot_measure(results, 24)
+plot_measure(results, 27)
+plot_measure(results, 28)
 
-# plot gof rejection rate
-results_df["gof_cov_H0"] <- ifelse(results_df$gof_cov < 0.05,
-                                      "Reject", "Do not reject")
-results_df["gof_csr_H0"] <- ifelse(results_df$gof_csr < 0.05,
-                                      "Reject", "Do not reject")
-results_df$gof_cov_H0 <- factor(results_df$gof_cov_H0,
-                                  levels = c("Reject", "Do not reject"))
-results_df$gof_csr_H0 <- factor(results_df$gof_csr_H0,
-                                  levels = c("Reject", "Do not reject"))
-tmp <- melt(results_df, id.vars = c("sim_data", "sample_size"),
-            measure.vars = c("gof_csr_H0", "gof_cov_H0"))
-tmp <- tmp[tmp$value == "Reject", ]
-gof_labs <- c("Reject CSR model", "Reject covariate model")
-names(gof_labs) <- c("gof_csr_H0", "gof_cov_H0")
-s_gof <- ggplot(tmp, aes(x = sample_size,
-                      fill = variable)) +
-              geom_bar(aes(y = (..count..) / 1000),
-                  position =   position_dodge()) +
-              facet_wrap(~sim_data, ncol = 3) +
-              labs(x = "Sample size", y = "Percentage of point patterns") +
-              theme(legend.position = "top") +
-          scale_y_continuous(labels = scales::percent) +
-              scale_fill_discrete(name = "", labels = gof_labs,
-                guide = guide_legend(nrow = 1))
-ggsave(filename = "sim_sample_gof.pdf", plot = s_gof,
-        device = "pdf", path = path, width = 8, height = 4,
-        units = "in", dpi = 500, limitsize = TRUE)
+results$MAE_data_2 <- results$res_data_abs_sum / results$res_len
+results$MAE_n_denom <- results$res_abs_sum / results$n
+
+box1 <- ggplot(results, aes(y = sample_size, x = MAE_n_denom)) +
+                geom_boxplot() +
+                facet_wrap(~sim_data, ncol = 2) +
+                labs(y = "Sample size", 
+                  title = "(a) Sum over all residuals, divide by n") +
+                theme(axis.title.x = element_blank())
+box2 <- ggplot(results, aes(y = sample_size, x = MAE_data)) +
+                geom_boxplot() +
+                facet_wrap(~sim_data, ncol = 2) +
+                labs(title = "(b) Sum over point residuals, divide by n") +
+                theme(axis.title.x = element_blank()) +
+                theme(axis.title.y = element_blank())
+box3 <- ggplot(results, aes(y = sample_size, x = MAE)) +
+                geom_boxplot() +
+                facet_wrap(~sim_data, ncol = 2) +
+                labs(y = "Sample size", x = "Mean absolute error",
+                  title = "(c) Sum over all residuals, divide by residuals length")
+box4 <- ggplot(results, aes(y = sample_size, x = MAE_data_2)) +
+                geom_boxplot() +
+                facet_wrap(~sim_data, ncol = 2) +
+                labs(x = "Mean absolute error",
+                  title = "(d) Sum over point residuals, divide by residuals length")+
+                theme(axis.title.y = element_blank())
+measure_plot <- (box1 + box2) / (box3 + box4)
+ggsave(filename = "sim_mae_calc.pdf", plot = measure_plot,
+          device = "pdf", path = path, width = 12, height = 9,
+          units = "in", dpi = 500, limitsize = TRUE)
 
 # df for sample size 200
 results_fit_200 <- results_fit[results_fit$sample_size == 200, ]
@@ -291,3 +311,6 @@ rm(agg_int, agg_npoint, results_200, tmp, tmp2, tmp3, names, notb, process,
   sample_size, sim_data, sim_labs, sim_labs_fill, sim_labs_x, results_fit_200)
 
 save.image(file = paste0(path, "knp_sim_sample.RData"))
+
+library("writexl")
+write_xlsx(results, "spat_sim.xlsx")

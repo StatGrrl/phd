@@ -40,13 +40,13 @@ all_images_sub <- as.solist(c(list(poach = poach_sub), covar_sub))
 
 # plot pixel images in sample window
 panel <- c("(a)", "(b)", "(c)", "(d)", "(e)", "(f)", "(g)", "(h)")
-pdf(paste0(path, "cov_window.pdf"), height = 9, width = 7)
-par(mfrow = c(4, 2), mar = c(2, 2, 1, 3), cex.main = 0.8, oma = c(3, 3, 0, 0))
+pdf(paste0(path, "cov_window.pdf"), height = 8.5, width = 7)
+par(mfrow = c(4, 2), mar = c(2, 1, 0, 3.5), cex.main = 0.8, oma = c(3, 3, 0, 0))
 for (i in seq_along(all_images_sub)) {
   rlab <- ifelse(i == 1, "Probability", "Distance (km)")
   plot(reflect(all_images_sub[[i]]), main = "", axes = TRUE,  ribsep = 0.05)
   mtext(rlab, side = 4, line = 1.75, cex = 0.8)
-  mtext(bquote(italic(.(panel[i]))), side = 3, line = -0.5, cex = 0.8)
+  #mtext(bquote(italic(.(panel[i]))), side = 3, line = -0.5, cex = 0.8)
   if (i == 1) {
     mtext(xlab, side = 1, line = 0.5, cex = 0.8, outer = TRUE)
     mtext(ylab, side = 2, line = 1, cex = 0.8, outer = TRUE)

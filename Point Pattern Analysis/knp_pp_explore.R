@@ -127,9 +127,9 @@ xlab <- "Distance (km)"
 ylab <- "Intensity Estimate"
 panel <- c("(a)", "(b)", "(c)", "(d)", "(e)", "(f)", "(g)")
 pdf(paste(path, "explore_cov_rhohat.pdf", sep = ""), height = 9, width = 7)
-par(mfrow = c(4, 2), mar = c(2, 2, 2, 1), cex.main = 1, oma = c(3, 3, 0, 0))
+par(mfrow = c(4, 2), mar = c(2, 2, 1, 1), cex.main = 1, oma = c(3, 3, 0, 0))
 for (i in seq_along(covariates)) {
-  plot(rhohat(sample, covariates[[i]]), main = panel[i])
+  plot(rhohat(sample, covariates[[i]]), main = "", legend=FALSE)
 }
 mtext(xlab, side = 1, line = 0.5, cex = 0.8, outer = TRUE)
 mtext(ylab, side = 2, line = 1, cex = 0.8, outer = TRUE)
@@ -152,9 +152,9 @@ xlab <- "Distance (km)"
 ylab <- "Probability"
 panel <- c("(a)", "(b)", "(c)", "(d)", "(e)", "(f)", "(g)")
 pdf(paste(path, "explore_cov_ks.pdf", sep = ""), height = 9, width = 7)
-par(mfrow = c(4, 2), mar = c(2, 2, 2, 1), cex.main = 1, oma = c(3, 3, 0, 0))
+par(mfrow = c(4, 2), mar = c(2, 2, 1, 1), cex.main = 1, oma = c(3, 3, 0, 0))
 for (i in seq_along(covariates)) {
-  plot(cdf.test(sample, covariates[[i]], test = "ks"), main = panel[i],
+  plot(cdf.test(sample, covariates[[i]], test = "ks"), main = "",
     xlab = "", ylab = "")
 }
 mtext(xlab, side = 1, line = 0.5, cex = 0.8, outer = TRUE)
@@ -196,9 +196,9 @@ xlab <- "Distance (km)"
 ylab <- "Probability"
 panel <- c("(a)", "(b)", "(c)", "(d)", "(e)", "(f)", "(g)")
 pdf(paste(path, "explore_cov_z1.pdf", sep = ""), height = 9, width = 7)
-par(mfrow = c(4, 2), mar = c(2, 2, 2, 1), cex.main = 1, oma = c(3, 3, 0, 0))
+par(mfrow = c(4, 2), mar = c(2, 2, 1, 1), cex.main = 1, oma = c(3, 3, 0, 0))
 for (i in seq_along(covariates)) {
-  plot(berman.test(sample, covariates[[i]], "Z1"), main = panel[i],
+  plot(berman.test(sample, covariates[[i]], "Z1"), main = "",
     xlab = "", ylab = "")
 }
 mtext(xlab, side = 1, line = 0.5, cex = 0.8, outer = TRUE)
@@ -220,15 +220,15 @@ mtext(ylab, side = 2, line = 1, cex = 0.8, outer = TRUE)
 dev.off()
 
 # roc curves
-xlab <- "Fraction of window area"
+xlab <- "Distance between points"
 ylab <- "Fraction of points "
 panel <- c("(a)", "(b)", "(c)", "(d)", "(e)", "(f)", "(g)")
 cov_dir <- c(TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, FALSE)
 pdf(paste(path, "explore_cov_roc.pdf", sep = ""), height = 9, width = 7)
-par(mfrow = c(4, 2), mar = c(2, 2, 2, 1), cex.main = 1, oma = c(3, 3, 0, 0))
+par(mfrow = c(4, 2), mar = c(2, 2, 1, 1), cex.main = 1, oma = c(3, 3, 0, 0))
 for (i in seq_along(covariates)) {
-  plot(roc(sample, covariates[[i]], high = cov_dir[i]), main = panel[i],
-    xlab = "", ylab = "")
+  plot(roc(sample, covariates[[i]], high = cov_dir[i]), main = "",
+    xlab = "", ylab = "", legend=FALSE)
 }
 mtext(xlab, side = 1, line = 0.5, cex = 0.8, outer = TRUE)
 mtext(ylab, side = 2, line = 1, cex = 0.8, outer = TRUE)
