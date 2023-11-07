@@ -6,7 +6,7 @@ Contains Python code for evaluation framework and simulations. Public shapefiles
 
 ## Images
 
-PDF Files of all images in thesis.
+Files of all images in thesis.
 
 ## Point pattern analysis
 
