@@ -19,7 +19,8 @@ cbPalette <- c("#999999", "#E69F00", "#56B4E9", "#009E73",
 sim_dummy <- function(iter, seed, prob, covariates, data_gen_index) {
   # simulation parameters
   set.seed(seed)
-  dummy_pt_prop <- c(2, 4, 6, 8, 10)
+  #dummy_pt_prop <- c(2, 4, 6, 8, 10)
+  dummy_pt_prop <- c(10)
   sample_size <- c(50, 100, 200, 300, 400, 500, 1000, 5000)
   data_gen <- c("CSR", "IP", "WIN", "pTHIN", "puTHIN", "PuTHIN")
   names <- c("Roads", "Camps", "Picnic", "Gates", "Border", "Dams", "Water")
@@ -94,7 +95,7 @@ sim_dummy <- function(iter, seed, prob, covariates, data_gen_index) {
                 pp_large <- rpoispp(lambda, win = w)
                 pp <- rthin(pp_large, p_u)
             }
-        n <- npoints(pp)
+        n_pts <- npoints(pp)
         ave_intensity <- intensity(pp)
 
         # dummy point pattern
@@ -133,11 +134,6 @@ sim_dummy <- function(iter, seed, prob, covariates, data_gen_index) {
 
         dummy_fit_intensity <- predict(dummy_fit, locations = prob,
             covariates = covariates, type = "intensity")
-        if (data_gen_index == 4) {
-            dummy_fit_intensity <- dummy_fit_intensity / p
-        } else if (data_gen_index == 5 || data_gen_index == 6) {
-            dummy_fit_intensity <- dummy_fit_intensity / p_u
-        }
         dummy_fit_ave_lambda <- mean(dummy_fit_intensity)
         dummy_fit_prob <- dummy_fit_intensity / mu
 
@@ -164,6 +160,8 @@ sim_dummy <- function(iter, seed, prob, covariates, data_gen_index) {
         # AIC
         fit_aic <- AIC(fit)
         dummy_aic <- AIC(dummy_fit)
+        fit_csr_aic <- AIC(csr_fit)
+        dummy_csr_aic <- AIC(dummy_csr_fit)
 
         res_iter <- data.frame(iter = i, dummy_gen = "Default",
                                 data_gen = data_gen[data_gen_index],
@@ -172,13 +170,14 @@ sim_dummy <- function(iter, seed, prob, covariates, data_gen_index) {
                                 ave_lambda = ave_lambda,
                                 pp_ave_lambda = ave_intensity,
                                 fit_ave_lambda = fit_ave_lambda,
-                                data_points = n,
+                                data_points = n_pts,
                                 dummy_points = diff_points,
                                 mae = mae,
                                 lambda_mae = lambda_mae,
                                 prob_mae = prob_mae,
                                 csr_mae = csr_mae,
-                                AIC = fit_aic)
+                                AIC = fit_aic,
+                                csr_aic = fit_csr_aic)
         results <- rbind(results, res_iter)
         res_dummy_iter <- data.frame(iter = i, dummy_gen = "CSR",
                                 data_gen = data_gen[data_gen_index],
@@ -187,13 +186,14 @@ sim_dummy <- function(iter, seed, prob, covariates, data_gen_index) {
                                 ave_lambda = ave_lambda,
                                 pp_ave_lambda = ave_intensity,
                                 fit_ave_lambda = dummy_fit_ave_lambda,
-                                data_points = n,
+                                data_points = n_pts,
                                 dummy_points = d,
                                 mae = dummy_mae,
                                 lambda_mae = dummy_lambda_mae,
                                 prob_mae = dummy_prob_mae,
                                 csr_mae = dummy_csr_mae,
-                                AIC = dummy_aic)
+                                AIC = dummy_aic,
+                                csr_aic = dummy_csr_aic)
         results_dummy <- rbind(results_dummy, res_dummy_iter)
 
         coef_fit <- summary(fit)
@@ -351,20 +351,23 @@ ggsave(filename = "sim_ip_coef.pdf", plot = box_coef,
         units = "in", dpi = 600, limitsize = TRUE)
 
 # boxplots of prob mae for default and dummy fit
-df <- results[results$dummy_prop == 10 & results$data_gen == "IP", ]
+options(scipen=5)
+df <- results[results$dummy_prop == 10, ]
 dummy_palette <- c(def_col, dummy_col)
 sim_labs <- c("Default dummy points", "CSR dummy points")
+
 box_prob <- ggplot(df, aes(y = sample_size, x = prob_mae,
                         fill = dummy_gen)) +
                 geom_boxplot() +
                 labs(y = "Sample size",
                         x = "Mean absolute error of probability") +
+              facet_wrap(~data_gen, ncol = 2, scales = "free") +
               scale_fill_manual(values = dummy_palette, name = "",
                                 labels = sim_labs) +
               theme(legend.position = "top",
                     strip.text = element_blank())
-ggsave(filename = "sim_ip_prob_error.pdf", plot = box_prob,
-          device = "pdf", path = path, width = 7, height = 5,
+ggsave(filename = "sim_dummy_prob_error.pdf", plot = box_prob,
+          device = "pdf", path = path, width = 7, height = 7,
           units = "in", dpi = 600, limitsize = TRUE)
 
 # Sample size 200, distributions
@@ -427,25 +430,43 @@ ggsave(filename = "sim_200_distr.pdf", plot = s_distr,
         device = "pdf", path = path, width = 7, height = 9,
         units = "in", dpi = 600, limitsize = TRUE)
 
-# plot mae for csr and cov
+# plot mae and for csr and cov
 df <- results[results$dummy_prop == 10 & results$dummy_gen == "CSR", ]
 results_200 <- df[df$sample_size == 200, ]
-tmp <- melt(results_200, id.vars = c("data_gen", "dummy_gen", "dummy_prop", "sample_size"),
+
+tmp_mae <- melt(results_200, id.vars = c("data_gen"),
             measure.vars = c("csr_mae", "mae"))
-sim_labs_fill <- c("CSR Model", "Full Covariate Model")
-names(sim_labs_fill) <- c("csr_mae", "mae")
-sim_labs_x <- c("CSR", "IP", "WIN", "pTHIN", "p(u)THIN", "P(u)THIN")
-names(sim_labs_x) <- data_gen
+tmp_mae$model <- ifelse(tmp_mae$variable == "csr_mae",
+                        "CSR Model", "Full Covariate Model")
+tmp_mae$measure <- "MAE"
+
+tmp_aic <- melt(results_200, id.vars = c("data_gen"),
+            measure.vars = c("csr_aic", "AIC"))
+tmp_aic$model <- ifelse(tmp_aic$variable == "csr_aic",
+                        "CSR Model", "Full Covariate Model")
+tmp_aic$measure <- "AIC"
+
+tmp <- rbind(tmp_mae, tmp_aic)
+tmp$model <- factor(tmp$model, levels = c("CSR Model", "Full Covariate Model"))
+tmp$measure <- factor(tmp$measure, levels = c("MAE", "AIC"))
+
+sim_labs <- c("CSR", "IP", "WIN", "pTHIN", "p(u)THIN", "P(u)THIN")
+names(sim_labs) <- data_gen
+
 model_pal <- c(cbPalette[2], cbPalette[4])
 
-mae_ss <- ggplot(tmp, aes(x = data_gen, y = value, fill = variable)) +
+mae_ss <- ggplot(tmp, aes(y = data_gen, x = value, fill = model)) +
               geom_boxplot() +
-              labs(x = "Point process", y = "Mean absolute error") +
-                theme(legend.position = "top") +
-                scale_fill_manual(, values = model_pal, name = "", labels = sim_labs_fill) +
-              scale_x_discrete(labels = sim_labs_x)
-ggsave(filename = "sim_200_mae.pdf", plot = mae_ss,
-        device = "pdf", path = path, width = 7, height = 5,
+              facet_wrap(~measure, ncol = 2, scales = "free_x",
+                            strip.position = "bottom") +
+              labs(y = "Point process") +
+                theme(legend.position = "top", axis.title.x = element_blank(),
+                        strip.background = element_blank(),
+                        strip.placement = "outside") +
+                scale_fill_manual(values = model_pal, name = "") +
+              scale_y_discrete(labels = sim_labs, limits = rev)
+ggsave(filename = "sim_200_mae_aic.pdf", plot = mae_ss,
+        device = "pdf", path = path, width = 7, height = 3,
         units = "in", dpi = 600, limitsize = TRUE)
 
 # plot variables
