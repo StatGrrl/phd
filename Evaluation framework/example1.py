@@ -127,16 +127,18 @@ ax.legend(handles=leg_item, loc='upper right', frameon=False, fontsize='x-large'
 plt.savefig('knp/thesis/4_1_2_park.pdf', dpi=1200, bbox_inches='tight')
 
 # Plot subarea
-fig1, ax = plt.subplots(1, figsize=(10, 10))
-subarea_poly.plot(ax=ax, color='cyan', alpha=0.5, edgecolor='black', linewidth=2, linestyle='dashed')
-kruger_park.boundary.plot(ax=ax, color='none', edgecolor='red', linewidth=1)
-ctx.add_basemap(ax, url=ctx.tile_providers.ST_TERRAIN, crs=kruger_park.default_crs, zoom=12)
-# ax.axis('off')
+gdf = kruger_park.boundary
+extent = (30.5, 32.5, -26, -22)
+
+fig, ax = plt.subplots(figsize=(5, 5))
+gdf.plot(ax=ax, color='none', edgecolor='red', linewidth=1)
+subarea_poly.plot(ax=ax, color='cyan', alpha=0.5, edgecolor='black', linewidth=1, linestyle='dashed')
+ctx.add_basemap(ax, crs='EPSG:4326', reset_extent=False)
 ax.xaxis.set_tick_params(labelsize=12)
 ax.yaxis.set_tick_params(labelsize=12)
 ax.set_xlabel('Longitude', fontsize=12)
 ax.set_ylabel('Latitude', fontsize=12)
-plt.savefig('knp/thesis/4_1_2_subarea.pdf', dpi=600, bbox_inches='tight')
+plt.savefig('knp/_subarea.pdf', dpi=600, bbox_inches='tight')
 
 x_lim = (kruger_subarea[0] - 0.04, kruger_subarea[2] + 0.04)
 y_lim = (kruger_subarea[1] - 0.04, kruger_subarea[3] + 0.04)
@@ -164,7 +166,7 @@ ax.set_xlabel('Longitude', fontsize=12)
 ax.set_ylabel('Latitude', fontsize=12)
 ax.set_xlim(x_lim)
 ax.set_ylim(y_lim)
-plt.savefig('knp/thesis/4_1_2_grid.pdf', dpi=1200, bbox_inches='tight')
+plt.savefig('knp/_grid.pdf', dpi=1200, bbox_inches='tight')
 
 # Plot grid with cell numbers
 centroids = ranger_rand.allowed_cells['Centroids']
@@ -557,3 +559,43 @@ for seed in seed_list:
         kruger_park.picnic_spots.plot(ax=ax, color='darkgreen', marker='^', markersize=45, label='picnic spots')
         kruger_park.gates.plot(ax=ax, color='crimson', marker='s', markersize=40, label='gates')
         plt.savefig('knp/thesis/4_1_' + str(i) + '_traj_max.pdf', dpi=1200, bbox_inches='tight')
+
+# plot grid with legend
+x_lim = (kruger_subarea[0] - 0.04, kruger_subarea[2] + 0.04)
+y_lim = (kruger_subarea[1] - 0.04, kruger_subarea[3] + 0.04)
+
+# Plot grid with geo features
+fig, ax = plt.subplots(1, figsize=(10, 5))
+kruger_park.grid.plot(ax=ax, facecolor='none', edgecolor='grey', linewidth=0.5)
+#kruger_park.trees.plot(ax=ax, facecolor='olive', edgecolor='none', alpha=0.5, label='trees')
+#kruger_park.mountains.plot(ax=ax, facecolor='brown', edgecolor='none', alpha=0.5, label='mountains')
+#kruger_park.rivers.plot(ax=ax, color='blue', linewidth=1.5, linestyle='solid', alpha=0.6, label='rivers')
+kruger_park.dams.plot(ax=ax, color='black', marker='o', markersize=40, label='dams')
+kruger_park.water.plot(ax=ax, color='royalblue', marker='D', markersize=40,
+                       label='fountains, water holes & drinking troughs', alpha=0.5)
+kruger_park.roads.plot(ax=ax, color='black', linewidth=2, linestyle='dashed', alpha=0.6, label='roads')
+kruger_park.camps.plot(ax=ax, color='indigo', marker='p', markersize=50, label='camps', alpha=1)
+kruger_park.picnic_spots.plot(ax=ax, color='darkgreen', marker='^', markersize=45, label='picnic spots', alpha=1)
+kruger_park.gates.plot(ax=ax, color='crimson', marker='s', markersize=40, label='gates', alpha=1)
+kruger_park.boundary.plot(ax=ax, color='none', edgecolor='red', linewidth=1, label='park border', alpha=1)
+# ax.axis('off')
+ax.xaxis.set_tick_params(labelsize=12)
+ax.yaxis.set_tick_params(labelsize=12)
+ax.set_xlabel('Longitude', fontsize=12)
+ax.set_ylabel('Latitude', fontsize=12)
+ax.set_xlim(x_lim)
+ax.set_ylim(y_lim)
+leg_item = [#Patch(edgecolor='none', facecolor='olive', alpha=0.5, label='dense trees'),
+            #Patch(edgecolor='none', facecolor='brown', alpha=0.3, label='steep mountains'),
+            Line2D([0], [0], color='red', linewidth=1.5, linestyle='solid', alpha=0.6, label='park border'),
+            Line2D([0], [0], color='black', linewidth=1.5, linestyle='dashed', alpha=0.6, label='tarred roads'),
+            #Line2D([0], [0], color='blue', linewidth=1.5, linestyle='solid', alpha=0.6, label='main rivers'),
+            Line2D([0], [0], color='white', markerfacecolor='black', marker='o', markersize=8, label='dams'),
+            Line2D([0], [0], color='white', markerfacecolor='royalblue', marker='D', markersize=7, alpha=0.5,
+                   label='water holes,\nfountains &\ndrinking troughs'),
+            Line2D([0], [0], color='white', markerfacecolor='indigo', marker='p', markersize=9, label='main camps', alpha=1),
+            Line2D([0], [0], color='white', markerfacecolor='darkgreen', marker='^', markersize=9,
+                   label='picnic spots', alpha=1),
+            Line2D([0], [0], color='white', markerfacecolor='crimson', marker='s', markersize=7, label='public gates', alpha=1)]
+ax.legend(handles=leg_item, loc='right', frameon=False, fontsize='large', bbox_to_anchor=(1.35, 0.65))
+plt.savefig('knp/_grid.pdf', dpi=1200, bbox_inches='tight')
